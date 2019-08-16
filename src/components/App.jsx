@@ -1,75 +1,49 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './App.module.sass'
+import uuid from 'uuid'
 import { Heading, Pane, SearchInput } from 'evergreen-ui'
+import FruitCard from './FruitCard'
+
+const fruits = ['Apples', 'Bananas', 'Oranges', 'Lime', 'Pears', 'Raspberries']
+const initFruits = fruits.map(name => ({
+  id: uuid.v4(),
+  name
+}))
 
 function App () {
+  const [fruits, setFruits] = useState(initFruits)
+
+  const handleInput = e => {
+    const re = new RegExp(e.target.value, 'i')
+
+    setFruits(
+      initFruits
+        .filter(({ name }) => name.match(re))
+        .map(({ id, name }) => ({
+          id,
+          name: name.replace(re, '<mark>$&</mark>')
+        }))
+    )
+  }
+
   return (
     <main className={styles.app}>
       <Heading size={700} marginBottom='default'>
-        The roster app
+        The fruits roster app
       </Heading>
 
-      <SearchInput placeholder='Filter cards' width='100%' />
+      <SearchInput
+        placeholder='Filter cards'
+        width='100%'
+        onInput={handleInput}
+        border='none'
+        style={{ boxShadow: 'none' }}
+      />
 
-      <Pane display='flex' justifyContent='space-between'>
-        <Pane
-          border
-          backgroundColor='white'
-          padding={24}
-          flexBasis='calc(25% - 18px)'
-          height={120}
-          marginTop={24}
-          display='flex'
-          justifyContent='center'
-          alignItems='center'
-        >
-          <Heading size={400}>Apples</Heading>
-        </Pane>
-
-        <Pane
-          border
-          backgroundColor='white'
-          padding={24}
-          flexBasis='calc(25% - 18px)'
-          width={200}
-          height={120}
-          marginTop={24}
-          display='flex'
-          justifyContent='center'
-          alignItems='center'
-        >
-          <Heading size={400}>Bananas</Heading>
-        </Pane>
-
-        <Pane
-          border
-          backgroundColor='white'
-          padding={24}
-          flexBasis='calc(25% - 18px)'
-          width={200}
-          height={120}
-          marginTop={24}
-          display='flex'
-          justifyContent='center'
-          alignItems='center'
-        >
-          <Heading size={400}>Oranges</Heading>
-        </Pane>
-
-        <Pane
-          border
-          backgroundColor='white'
-          padding={24}
-          flexBasis='calc(25% - 18px)'
-          width={200}
-          height={120}
-          marginTop={24}
-          display='flex'
-          justifyContent='center'
-          alignItems='center'
-        >
-          <Heading size={400}>Pears</Heading>
-        </Pane>
+      <Pane display='flex' flexWrap='wrap' style={{ margin: '0 -12px' }}>
+        {fruits.map(({ id, name }) => (
+          <FruitCard id={id} name={name} />
+        ))}
       </Pane>
     </main>
   )
